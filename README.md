@@ -33,7 +33,7 @@ FileSharePlus is a simple file sharing web application that allows users to uplo
 
 ## Support
 
-For support, contact [THISARA](mailto:thisara.a2001@gmail.com) or visit the [issue tracker](https://github.com/ThisaraAriyawansha/FileSharePlus/issues).
+For support, contact [THISARA](mailto:thisara.a2001@gmail.com).
 
 ## Roadmap
 
