@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File Sharing App</title>
+<style>
+    /* CSS styles for tabs and form elements */
+</style>
+</head>
+<body>
+    <div class="tabs">
+        <button id="uploadTab" onclick="showTab('upload')">Upload</button>
+        <button id="downloadTab" onclick="showTab('download')">Download</button>
+    </div>
+    
+    <div id="uploadTabContent" class="tab-content">
+        <h2>Upload File</h2>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" id="fileInput">
+            <input type="text" name="security_key" placeholder="Enter Security Key">
+            <button type="submit">Upload File</button>
+        </form>
+        <div id="uploadMessage"></div>
+    </div>
+
+    <div id="downloadTabContent" class="tab-content" style="display: none;">
+        <h2>Download or Remove File</h2>
+        <ul id="fileList"></ul>
+    </div>
+
+    <script>
+        // JavaScript code to switch between tabs and handle form submission
+    </script>
+</body>
+</html>
