@@ -159,7 +159,8 @@
 
         async function getFileList() {
             try {
-                const response = await fetch('/files');
+                const response =
+                await fetch('/files');
                 const files = await response.json();
                 const fileList = document.getElementById('fileList');
                 fileList.innerHTML = ''; // Clear the file list
@@ -171,8 +172,7 @@
                     downloadBtn.addEventListener('click', () => {
                         const securityKey = prompt('Enter Security Key to Download');
                         if (securityKey) {
-                            window
-                            window.location.href = `/download/${file}?key=${securityKey}`;
+                            downloadFile(file, securityKey);
                         }
                     });
                     const removeBtn = document.createElement('button');
@@ -195,18 +195,37 @@
             }
         }
 
-        async function removeFile(filename, key) {
+        async function downloadFile(filename, key) {
             try {
-                const response = await fetch(`/remove/${filename}?key=${key}`, {
-                    method: 'DELETE',
-                });
-                const data = await response.json();
-                alert(data.message);
-                getFileList(); // Refresh file list after removal
+                const response = await fetch(`/download/${filename}?key=${key}`);
+                if (response.ok) {
+                    window.location.href = `/download/${filename}?key=${key}`;
+                } else {
+                    alert('Error downloading file. Invalid security key or file not found.');
+                }
             } catch (error) {
                 console.error('Error:', error);
             }
         }
+
+        async function removeFile(filename, key) {
+    try {
+        const response = await fetch(`/remove/${filename}?key=${key}`, {
+            method: 'DELETE',
+        });
+        const data = await response.json();
+        if (response.ok) {
+            alert(data.message);
+            getFileList(); // Refresh file list after removal
+        } else {
+            alert('Error removing file. Invalid security key.');
+        } 
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
     </script>
+
 </body>
 </html>
