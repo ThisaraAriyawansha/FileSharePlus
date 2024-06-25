@@ -5,32 +5,208 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>File Sharing App</title>
 <style>
-    /* CSS styles for tabs and form elements */
+    /* Global styles */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    .container {
+        max-width: 800px;
+        margin: auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        animation: fade-in 0.5s ease-out;
+    }
+    @keyframes fade-in {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    h1, h2 {
+        margin-top: 0;
+    }
+    .tabs {
+        display: flex;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #ddd;
+        overflow-x: auto;
+    }
+    .tabs button {
+        cursor: pointer;
+        padding: 10px 20px;
+        margin-right: 10px;
+        border: none;
+        background-color: transparent;
+        color: #555;
+        font-size: 16px;
+        border-bottom: 2px solid transparent;
+        transition: border-color 0.3s ease;
+    }
+    .tabs button.active {
+        border-color: #007bff;
+        color: #007bff;
+    }
+    .tab-content {
+        display: none;
+    }
+    .file-item {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #f9f9f9;
+        padding: 10px;
+        border-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        animation: slide-up 0.5s ease-out;
+    }
+    @keyframes slide-up {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .file-item button {
+        cursor: pointer;
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+    .file-item button.download {
+        background-color: #28a745;
+        color: #fff;
+    }
+    .file-item button.remove {
+        background-color: #dc3545;
+        color: #fff;
+    }
+    .file-item button:hover {
+        filter: brightness(90%);
+    }
 </style>
 </head>
 <body>
-    <div class="tabs">
-        <button id="uploadTab" onclick="showTab('upload')">Upload</button>
-        <button id="downloadTab" onclick="showTab('download')">Download</button>
-    </div>
-    
-    <div id="uploadTabContent" class="tab-content">
-        <h2>Upload File</h2>
-        <form id="uploadForm" enctype="multipart/form-data">
-            <input type="file" name="file" id="fileInput">
-            <input type="text" name="security_key" placeholder="Enter Security Key">
-            <button type="submit">Upload File</button>
-        </form>
-        <div id="uploadMessage"></div>
-    </div>
+    <div class="container">
+        <h1>FileSharePlus App</h1>
+        <div class="tabs">
+            <button id="uploadTab" onclick="showTab('upload')" class="active">Upload</button>
+            <button id="downloadTab" onclick="showTab('download')">Download</button>
+        </div>
+        
+        <div id="uploadTabContent" class="tab-content" style="display: block;">
+            <h2>Upload File</h2>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input type="file" name="file" id="fileInput">
+                <input type="text" name="security_key" placeholder="Enter Security Key">
+                <button type="submit">Upload File</button>
+            </form>
+            <div id="uploadMessage"></div>
+        </div>
 
-    <div id="downloadTabContent" class="tab-content" style="display: none;">
-        <h2>Download or Remove File</h2>
-        <ul id="fileList"></ul>
+        <div id="downloadTabContent" class="tab-content">
+            <h2>Download or Remove Files</h2>
+            <ul id="fileList"></ul>
+        </div>
     </div>
 
     <script>
-        // JavaScript code to switch between tabs and handle form submission
+        function showTab(tabName) {
+            var tabs = document.querySelectorAll('.tabs button');
+            var tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            tabContents.forEach(content => {
+                content.style.display = 'none';
+            });
+
+            var selectedTab = document.getElementById(tabName + 'Tab');
+            var selectedTabContent = document.getElementById(tabName + 'TabContent');
+            
+            selectedTab.classList.add('active');
+            selectedTabContent.style.display = 'block';
+            
+            if (tabName === 'download') {
+                getFileList();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const formData = new FormData();
+                formData.append('file', document.getElementById('fileInput').files[0]);
+                formData.append('security_key', document.querySelector('#uploadTabContent input[name="security_key"]').value);
+
+                try {
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    const data = await response.json();
+                    document.getElementById('uploadMessage').textContent = data.message;
+                    getFileList(); // Refresh file list after upload
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+
+        async function getFileList() {
+            try {
+                const response = await fetch('/files');
+                const files = await response.json();
+                const fileList = document.getElementById('fileList');
+                fileList.innerHTML = ''; // Clear the file list
+                files.forEach((file) => {
+                    const li = document.createElement('li');
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.textContent = 'Download';
+                    downloadBtn.className = 'download';
+                    downloadBtn.addEventListener('click', () => {
+                        const securityKey = prompt('Enter Security Key to Download');
+                        if (securityKey) {
+                            window
+                            window.location.href = `/download/${file}?key=${securityKey}`;
+                        }
+                    });
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.className = 'remove';
+                    removeBtn.addEventListener('click', () => {
+                        const securityKey = prompt('Enter Security Key to Remove');
+                        if (securityKey) {
+                            removeFile(file, securityKey);
+                        }
+                    });
+                    li.textContent = file + ' ';
+                    li.appendChild(downloadBtn);
+                    li.appendChild(removeBtn);
+                    li.className = 'file-item';
+                    fileList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function removeFile(filename, key) {
+            try {
+                const response = await fetch(`/remove/${filename}?key=${key}`, {
+                    method: 'DELETE',
+                });
+                const data = await response.json();
+                alert(data.message);
+                getFileList(); // Refresh file list after removal
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
     </script>
 </body>
 </html>
