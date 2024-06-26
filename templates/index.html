@@ -194,19 +194,18 @@
                 console.error('Error:', error);
             }
         }
-
         async function downloadFile(filename, key) {
-            try {
-                const response = await fetch(`/download/${filename}?key=${key}`);
-                if (response.ok) {
-                    window.location.href = `/download/${filename}?key=${key}`;
-                } else {
-                    alert('Error downloading file. Invalid security key or file not found.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
+    try {
+        const response = await fetch(`/download/${filename}?key=${key}`);
+        if (response.ok) {
+            window.location.href = `/download/${filename}?key=${key}`;
+        } else {
+            alert('Error downloading file. Invalid security key or file not found.');
         }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
 
         async function removeFile(filename, key) {
     try {
