@@ -18,7 +18,7 @@ FileSharePlus is a simple file sharing web application that allows users to uplo
 
 ## Setup and Installation
 
-1. Clone the repository: `git clone https://github.com/yourusername/FileSharePlus.git`
+1. Clone the repository: `git clone https://github.com/ThisaraAriyawansha/FileSharePlus.git`
 2. Install dependencies: `pip install -r requirements.txt`
 3. Set up the environment variables (e.g., Flask secret key, file storage path).
 4. Run the application: `python app.py`
